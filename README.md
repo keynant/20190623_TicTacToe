@@ -1,2 +1,2 @@
-# 20190623_TicTacToe
+# TicTacToe
 A Python TicTacToe game
