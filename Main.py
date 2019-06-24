@@ -4,11 +4,17 @@ def printBoard(): #prints the current board, in a grid layout with | between row
     print("|".join(board[2]))
 
 def playerPlay(player): #player input. doesn't check for an empty space, this is done on the main loop.
-    sel = input(f'Player {player}, please enter your selection(row, column):')
-    sel.split(",")
-    row = int(sel[0])
-    column = int(sel[2])
-    play = [row, column]
+    while True:
+        sel = input(f'Player {player}, please enter your selection(row, column):')
+        sel.split(",")
+        if sel[0] not in ("0","1","2") or sel[2] not in ("0","1","2"):   #input filtering - if invalid, repeats question
+            print("input invalid")
+            continue
+        row = int(sel[0])
+        column = int(sel[2])
+        play = [row, column]
+        break
+
     return play
 
 def changeBoard(currentPlayer, currentPlay): #a function to change the state of a single block. called with the play, and the symbol.
@@ -44,20 +50,21 @@ def checkWin(): #a function to check all win states (rows, colums, diagonals)
         return ("Diagonal", "RtL")
     else: return 0
 
-
+def initNewGame():
+    board = [["_", "_", "_"], ["_", "_", "_"], ["_", "_", "_"]]  # Initialize board
+    firstPlayerTurn = True  # 1st player is allways X's
 
 
 
 while True:
-    board = [["_", "_", "_"], ["_", "_", "_"], ["_", "_", "_"]] #Initialize board
-    firstPlayerTurn = True  #1st player is allways X's
+    initNewGame()   #moved this to a function for a cleaner look. refreshes the board and game state.
     while True:
 
         printBoard()
 
         if firstPlayerTurn: #first player is always 'x'. statement checks is it's the first player turn.
             currentPlayer = "x"
-            currentPlay = playerPlay(1)
+            currentPlay = playerPlay(1) #call to the play function - input from the player and input filtering
             if board[currentPlay[0]][currentPlay[1]] == "_": #is the spot the player chose empty? if not, restarts the while loop
                 changeBoard(currentPlayer, currentPlay)
                 firstPlayerTurn = False #flips the player to the second player.
@@ -78,22 +85,25 @@ while True:
 
         if win:  #if True. Win has value 0 (False) if no win condition is met.
             printBoard()
-            print(f'Player wins in {win[0]} {win[1]}')  # congratulate
+            print(f'Player {currentPlayer} wins in {win[0]} {win[1]}')  # congratulate
             break # TODO: ogokoeoo
 
 
 
-        if boardCount() == 0:   #board full check is below win check. player can win in a full board (last move)
+        if boardCount() == 0:   #board full check (draw). Is below win check- player can win in a full board (last move)
             printBoard()
             print("There are no winners...Better luck next time!")#board is full, a draw
             break
 
+
+    #new game loop. checks if input is valid (Y,y,N,n). if not, repeats question.
+
     another = input("Would you like to play another game(y/n)?")
-    while another.lower() != "y" and another.lower() != "n":
+    while another.lower() != "y" and another.lower() != "n":    #input filter for only valid input.
         print("Invalid input")
         another = input("Would you like to play another game(y/n)?")
 
-    if another.lower() == "y":
+    if another.lower() == "y": #repeats main game loop
         continue
 
     elif another.lower() == "n":
@@ -108,6 +118,5 @@ while True:
 
 
 # TODO:
-#   * implement input cleaning (no illegal input allowed, and won't break the game - critical)
 #   * implement PC? 2 PCs?
 #   * implement 'next turn can win' scenario
