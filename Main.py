@@ -51,35 +51,102 @@ def checkWin(): #a function to check all win states (rows, colums, diagonals)
     else: return 0
 
 def initNewGame():
+    global playerNumber     #not sure what's going on. for some reason board clean-up worked without global...I think.
+    global humanPlayers
+    global board
     board = [["_", "_", "_"], ["_", "_", "_"], ["_", "_", "_"]]  # Initialize board
-    firstPlayerTurn = True  # 1st player is allways X's
+    playerNumber = 0  # 1st player is allways X's
+    while True:
+        humanPlayers = input("How many human players?")
+        if humanPlayers in ("0","1","2"):
+            humanPlayers = int(humanPlayers)
+            break
+        else:
+            print("Invalid Input")
+            continue
 
+def isEmpty(currentPlay):
+    if board[currentPlay[0]][currentPlay[1]] == "_": #checks if the current play is an empty tile.
+        return True
+    else: return False
 
+import random
 
+def pcPlay(player): #a function that randomly selects an empty tile. used for the PC player's turn
+    while True:
+        sel = [random.randint(0,2),random.randint(0,2)]
+        row = int(sel[0])
+        column = int(sel[1])
+        play = [row, column]
+        if not isEmpty(play): #if the return from isEmpty() is False, return to start
+            continue
+        else:
+            print(f'PC Player {player-2} has played:')
+            break
+        
+    return play
+
+def changePlayer(): #changes the current player. if two humans - between 1 and 2, if 2 pc's - between 3 and 4. if one human, between 1 and 4 (x's vs o's)
+    global playerNumber
+    if humanPlayers == 2:
+        if playerNumber == 1: playerNumber = 2
+        else: playerNumber = 1
+    if humanPlayers == 1:
+        if playerNumber == 1: playerNumber = 4
+        else: playerNumber = 1
+    if humanPlayers == 0:
+        if playerNumber == 3: playerNumber = 4
+        else: playerNumber = 3
+
+####### Start
+
+#Initial variables
+board = [["_", "_", "_"], ["_", "_", "_"], ["_", "_", "_"]]  # Initialize board
+playerNumber = 0  # 1st player is allways X's
+humanPlayers = 2
+
+#Main loop
 while True:
     initNewGame()   #moved this to a function for a cleaner look. refreshes the board and game state.
+    changePlayer()  #makes the first player to player 1 if vs human or PC, makes it player 3(pc) if only PC's are playing
     while True:
 
         printBoard()
 
-        if firstPlayerTurn: #first player is always 'x'. statement checks is it's the first player turn.
+        if playerNumber == 1: #first player is always 'x'. statement checks is it's the first player turn.
             currentPlayer = "x"
             currentPlay = playerPlay(1) #call to the play function - input from the player and input filtering
-            if board[currentPlay[0]][currentPlay[1]] == "_": #is the spot the player chose empty? if not, restarts the while loop
+            if isEmpty(currentPlay):
                 changeBoard(currentPlayer, currentPlay)
-                firstPlayerTurn = False #flips the player to the second player.
+                changePlayer()
             else:
                 print("place taken, please choose another spot")
                 continue
-        else:
+
+
+        elif playerNumber == 2 :
             currentPlayer = "o"
             currentPlay = playerPlay(2)
-            if board[currentPlay[0]][currentPlay[1]] == "_":
+            if isEmpty(currentPlay):
                 changeBoard(currentPlayer, currentPlay)
-                firstPlayerTurn = True
+                changePlayer()
             else:
                 print("place taken, please choose another spot")
                 continue
+
+
+        elif playerNumber == 3:
+            currentPlayer = "x"
+            currentPlay = pcPlay(3)  # call to the pc play function - random input
+            changeBoard(currentPlayer, currentPlay) #pcPlay() only places in non empty spots
+            changePlayer()
+
+
+        elif playerNumber == 4:
+            currentPlayer = "o"
+            currentPlay = pcPlay(4)  # call to the pc play function - random input
+            changeBoard(currentPlayer, currentPlay)  # pcPlay() only places in non empty spots
+            changePlayer()
 
         win=checkWin() #function to check if any win condition is present. runs after each play.
 
@@ -118,5 +185,4 @@ while True:
 
 
 # TODO:
-#   * implement PC? 2 PCs?
 #   * implement 'next turn can win' scenario
