@@ -46,51 +46,68 @@ def checkWin(): #a function to check all win states (rows, colums, diagonals)
 
 
 
-board = [["_","_","_"],["_","_","_"],["_","_","_"]]
-firstPlayerTurn = True
+
 
 while True:
+    board = [["_", "_", "_"], ["_", "_", "_"], ["_", "_", "_"]] #Initialize board
+    firstPlayerTurn = True  #1st player is allways X's
+    while True:
 
-    printBoard()
-
-    if firstPlayerTurn: #first player is always 'x'. statement checks is it's the first player turn.
-        currentPlayer = "x"
-        currentPlay = playerPlay(1)
-        if board[currentPlay[0]][currentPlay[1]] == "_": #is the spot the player chose empty? if not, restarts the while loop
-            changeBoard(currentPlayer, currentPlay)
-            firstPlayerTurn = False #flips the player to the second player.
-        else:
-            print("place taken, please choose another spot")
-            continue
-    else:
-        currentPlayer = "o"
-        currentPlay = playerPlay(2)
-        if board[currentPlay[0]][currentPlay[1]] == "_":
-            changeBoard(currentPlayer, currentPlay)
-            firstPlayerTurn = True
-        else:
-            print("place taken, please choose another spot")
-            continue
-
-    win=checkWin() #function to check if any win condition is present. runs after each play.
-
-    if win:  #if True. Win has value 0 (False) if no win condition is met.
         printBoard()
-        print(f'Player wins in {win[0]} {win[1]}')  # congratulate
-        break # TODO: ogokoeoo
+
+        if firstPlayerTurn: #first player is always 'x'. statement checks is it's the first player turn.
+            currentPlayer = "x"
+            currentPlay = playerPlay(1)
+            if board[currentPlay[0]][currentPlay[1]] == "_": #is the spot the player chose empty? if not, restarts the while loop
+                changeBoard(currentPlayer, currentPlay)
+                firstPlayerTurn = False #flips the player to the second player.
+            else:
+                print("place taken, please choose another spot")
+                continue
+        else:
+            currentPlayer = "o"
+            currentPlay = playerPlay(2)
+            if board[currentPlay[0]][currentPlay[1]] == "_":
+                changeBoard(currentPlayer, currentPlay)
+                firstPlayerTurn = True
+            else:
+                print("place taken, please choose another spot")
+                continue
+
+        win=checkWin() #function to check if any win condition is present. runs after each play.
+
+        if win:  #if True. Win has value 0 (False) if no win condition is met.
+            printBoard()
+            print(f'Player wins in {win[0]} {win[1]}')  # congratulate
+            break # TODO: ogokoeoo
 
 
 
-    if boardCount() == 0:   #board full check is below win check. player can win in a full board (last move)
-        printBoard()
-        print("There are no winners...Better luck next time!")#board is full, a draw
+        if boardCount() == 0:   #board full check is below win check. player can win in a full board (last move)
+            printBoard()
+            print("There are no winners...Better luck next time!")#board is full, a draw
+            break
+
+    another = input("Would you like to play another game(y/n)?")
+    while another.lower() != "y" and another.lower() != "n":
+        print("Invalid input")
+        another = input("Would you like to play another game(y/n)?")
+
+    if another.lower() == "y":
+        continue
+
+    elif another.lower() == "n":
+        print("Thanks for playing!")
         break
 
 
 
 
+
+
+
+
 # TODO:
-#   * implement 'new game' (critical)
 #   * implement input cleaning (no illegal input allowed, and won't break the game - critical)
 #   * implement PC? 2 PCs?
 #   * implement 'next turn can win' scenario
